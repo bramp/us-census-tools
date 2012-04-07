@@ -1,0 +1,5 @@
+A collection of tools to help download and process US Census data.
+by Andrew Brampton 2011-2012
+
+fetch_tiger2010.php - Fetchs Tiger2010 shape files for various geographies
+
