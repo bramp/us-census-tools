@@ -2,4 +2,25 @@ A collection of tools to help download and process US Census data.
 by Andrew Brampton 2011-2012
 
 fetch_tiger2010.php - Fetchs Tiger2010 shape files for various geographies
+
 import_tiger.php    - Parses the shape file and stores it into a different format
+                    - You will need the php-dbase extension (pecl install dbase)
+
+
+An example
+php import_tiger.php tl_2010_us_csa10.sqlite maps/TIGER2010/CSA/2010/*
+php import_tiger.php tl_2010_us_sldu10.sqlite maps/TIGER2010/SLDU/2010/*
+php import_tiger.php tl_2010_us_vtd10.sqlite maps/TIGER2010/VTD/2010/*
+php import_tiger.php tl_2010_us_bg10.sqlite maps/TIGER2010/BG/2010/*
+php import_tiger.php tl_2010_us_elsd10.sqlite maps/TIGER2010/ELSD/2010/*
+php import_tiger.php tl_2010_us_state10.sqlite maps/TIGER2010/STATE/2010/*
+php import_tiger.php tl_2010_us_zcta510.sqlite maps/TIGER2010/ZCTA5/2010/*
+php import_tiger.php tl_2010_us_cbsa10.sqlite maps/TIGER2010/CBSA/2010/*
+php import_tiger.php tl_2010_us_county10.sqlite maps/TIGER2010/COUNTY/2010/*
+php import_tiger.php tl_2010_us_scsd10.sqlite maps/TIGER2010/SCSD/2010/*
+php import_tiger.php tl_2010_us_unsd10.sqlite maps/TIGER2010/UNSD/2010/*
+
+php import_tiger.php tl_2010_us_cd108.sqlite maps/TIGER2010/CD/108/*
+php import_tiger.php tl_2010_us_cd111.sqlite maps/TIGER2010/CD/111/*
+
+
