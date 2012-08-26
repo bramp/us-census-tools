@@ -192,9 +192,9 @@ function process_file($db, $filename) {
 		}
 
 		if (isset($data['NAME10']))
-			$name10  = trim(convert_to_utf8($data['NAME10']));
+			$name10 = trim(convert_to_utf8($data['NAME10']));
 		else
-			$name10 = '';
+			$name10 = null;
 
 
 		$region_id = $db->region($geoid10, $name10);
