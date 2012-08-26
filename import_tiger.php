@@ -79,18 +79,38 @@ class SqliteTigerDatabase implements TigerDatabase {
 		$this->dbh->exec('PRAGMA journal_mode = MEMORY');
 
 		// Clear out all the data
-		$this->dbh->exec('CREATE TABLE IF NOT EXISTS regions (id INTEGER PRIMARY KEY, geoid TEXT, name TEXT);');
-		$this->dbh->exec('CREATE TABLE IF NOT EXISTS parts   (id INTEGER PRIMARY KEY, regionid , minX NUMERIC, minY NUMERIC, maxX NUMERIC, maxY NUMERIC, points BLOB);');
-		$this->dbh->exec('DELETE FROM regions');
-		$this->dbh->exec('DELETE FROM parts');
+		$this->dbh->exec( 'CREATE TABLE IF NOT EXISTS region (
+			id INTEGER PRIMARY KEY, geoid TEXT NOT NULL, name TEXT,
+			minX NUMERIC NOT NULL, minY NUMERIC NOT NULL,
+			maxX NUMERIC NOT NULL, maxY NUMERIC NOT NULL);'
+		);
+		$this->dbh->exec('CREATE TABLE IF NOT EXISTS part (
+			id INTEGER PRIMARY KEY, region_id INTEGER NOT NULL,
+			minX NUMERIC NOT NULL, minY NUMERIC NOT NULL,
+			maxX NUMERIC NOT NULL, maxY NUMERIC NOT NULL, points BLOB NOT NULL);');
 
-		$this->sth_region  = $this->dbh->prepare('INSERT INTO regions (geoid, name) VALUES (?,?)') or die('Failed to prepare region INSERT query');
-		$this->sth_part    = $this->dbh->prepare('INSERT INTO parts (regionid, minx, miny, maxx, maxy, points) VALUES (?,?,?,?,?,?)');
+		$this->dbh->exec('DELETE FROM region');
+		$this->dbh->exec('DELETE FROM part');
+
+		$this->sth_region  = $this->dbh->prepare('INSERT INTO region (geoid, name, minx, miny, maxx, maxy) VALUES (?,?, -180, -90, 180, 90)') or die('Failed to prepare region INSERT query');
+		$this->sth_part    = $this->dbh->prepare('INSERT INTO part (region_id, minx, miny, maxx, maxy, points) VALUES (?,?,?,?,?,?)');
 
 		$this->dbh->beginTransaction();
 	}
 
 	function __destruct() {
+		$this->dbh->commit();
+
+		// Now denormalise the DB a little and work out max bounds for the regions
+		$sth_region_up = $this->dbh->prepare('UPDATE region SET minx = ?, miny = ?, maxx = ?, maxy = ? WHERE id = ?') or die('Failed to prepare region UPDATE query');
+		$sth = $this->dbh->query('SELECT MIN(p.minx), MIN(p.miny), MAX(p.maxx), MAX(p.maxy), r.id FROM region r JOIN part p ON r.id = p.region_id GROUP BY r.id');
+
+		$this->dbh->beginTransaction();
+
+		foreach ($sth->fetchAll(PDO::FETCH_NUM) as $row) {
+			$sth_region_up->execute($row);
+		}
+
 		$this->dbh->commit();
 	}
 
@@ -172,9 +192,9 @@ function process_file($db, $filename) {
 		}
 
 		if (isset($data['NAME10']))
-			$name10  = trim(convert_to_utf8($data['NAME10']));
+			$name10 = trim(convert_to_utf8($data['NAME10']));
 		else
-			$name10 = '';
+			$name10 = null;
 
 
 		$region_id = $db->region($geoid10, $name10);
@@ -269,3 +289,5 @@ $db = new SqliteTigerDatabase($dbname);
 foreach ($argv as $filename) {
 	process_file($db, $filename);
 }
+
+unset($db); // force a deconstruct

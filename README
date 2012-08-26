@@ -2,6 +2,7 @@ A collection of tools to help download and process US Census data.
 by Andrew Brampton 2011-2012
 
 fetch_tiger2010.php - Fetchs Tiger2010 shape files for various geographies
+
 import_tiger.php    - Parses the shape file and stores it into a different format
                     - You will need the php-dbase extension (pecl install dbase)
 
