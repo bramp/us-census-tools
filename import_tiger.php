@@ -22,6 +22,13 @@ function ends_with($haystack, $needle) {
 	return substr_compare($haystack, $needle, -$len, $len) === 0;
 }
 
+// Unzip uses the fuse-zip filesystem
+function unzip_fuse($zipfile, $destdir = '') {
+	mkdir($destdir, 0777, true);
+	system("fuse-zip $zipfile $destdir");
+	return array($destdir);
+}
+
 function unzip($zipfile, $destdir = '') {
 	$files = array();
 
@@ -145,12 +152,40 @@ class UnlinkMe {
 	}
 }
 
-function process_zip_file($db, $filename) {
-	// Uncompress
-	$zipfiles = unzip($filename, sys_get_temp_dir());
+class UnmountMe {
+	var $path;
 
-	// This ensures PHP cleans up our temp files
-	$unlink = new UnlinkMe($zipfiles);
+	function __construct($path) {
+		$this->path = $path;
+	}
+
+	function __destruct() {
+		echo "Umounting $this->path\n";
+		//system ("umount $this->path");
+		system ("fusermount -u $this->path");
+		rmdir($this->path);
+	}
+}
+
+
+
+function process_zip_file($db, $filename) {
+	$usefuse = true;
+
+	if ($usefuse) {
+		$mountpath = sys_get_temp_dir() . '/' . uniqid();
+		// Uncompress
+		$zipfiles = unzip_fuse($filename, $mountpath);
+
+		// This ensures PHP cleans up our temp files
+		$unlink = new UnmountMe($mountpath);
+	} else {
+		// Uncompress
+		$zipfiles = unzip($filename, sys_get_temp_dir());
+
+		// This ensures PHP cleans up our temp files
+		$unlink = new UnlinkMe($zipfiles);
+	}
 
 	foreach($zipfiles as $file) {
 		process_file($db, $file);
@@ -159,15 +194,25 @@ function process_zip_file($db, $filename) {
 
 function process_file($db, $filename) {
 
+	if (is_dir($filename)) {
+		foreach (glob("$filename/*") as $f)
+			process_file($db, $f);
+		return;
+	}
+
 	if (ends_with($filename, '.zip')) {
 		return process_zip_file($db, $filename);
 	}
 
-	if (!ends_with($filename, '.shp')) {
-		echo "Skipping $filename\n";
-		return;
+	if (ends_with($filename, '.shp')) {
+		return process_shp_file($db, $filename);
 	}
 
+
+	echo "Skipping $filename\n";
+}
+
+function process_shp_file($db, $filename) {
 
 	$shp = new ShapeFile($filename, array('noparts' => false));
 	if (!$shp)
