@@ -112,8 +112,7 @@ class ShapeFile{
 	}
 
 
-	function __destruct()
-	{
+	function __destruct() {
 		$this->closeFile();
 	}
 
@@ -187,6 +186,7 @@ class ShapeFile{
 	private function closeFile(){
 		if($this->fp){
 			fclose($this->fp);
+			$this->fp = null;
 		}
 	}
 
@@ -239,7 +239,11 @@ class ShapeRecord{
 		$this->file_name = $file_name;
 
 	}
-	
+
+	function __destruct() {
+		$this->_closeDBFFile();
+	}
+
 	public function getNextRecordPosition(){
 		$nextRecordPosition = $this->fpos + ((4 + $this->content_length )* 2);
 		return $nextRecordPosition;

@@ -220,6 +220,9 @@ function process_shp_file($db, $filename) {
 
 	while ($record = $shp->getNext()) {
 
+		unset($prev_record); // Ensure we keep things cleaned up
+		$prev_record = $record;
+
 		// Describitive data
 		$data = $record->getDbfData();
 		if (count($data) == 0)
@@ -333,6 +336,8 @@ function process_shp_file($db, $filename) {
 
 		echo "Adding $geoid10: $name10 - $total_points_compress/$total_points\n";
 	}
+
+	unset($shp);
 }
 
 
