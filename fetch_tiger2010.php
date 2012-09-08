@@ -1,7 +1,7 @@
 <?php 
 // Fetches 2010 TIGER/Line Shapefiles
-// by Andrew Brampton 2011
-// 
+// by Andrew Brampton 2011-2012
+//
 // I created this because a lot of the TIGER data is in multiple files, for example,
 // the county data is broken down by state, and in one large US file.
 // This will download the most complete data possible.

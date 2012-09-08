@@ -1,7 +1,7 @@
 <?php
 /**
  * Converts the tiger Shapefiles into something else
- * by Andrew Brampton 2011
+ * by Andrew Brampton 2011-2012
  */
 
 require 'lib/ShapeFile.inc.php';
