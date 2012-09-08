@@ -60,7 +60,7 @@ interface TigerDatabase {
 	 * @param string $name10
 	 * @return a ID to be used later
 	 */
-	function region($geoid10, $name10, $land_area, $water_area);
+	function region($geoid10, $name10, $area, $meta = null);
 
 	/**
 	 * A new boundary of a region
@@ -88,7 +88,7 @@ class SqliteTigerDatabase implements TigerDatabase {
 		// Clear out all the data
 		$this->dbh->exec( 'CREATE TABLE IF NOT EXISTS region (
 			id INTEGER PRIMARY KEY, geoid TEXT NOT NULL, name TEXT,
-			land_area NUMERIC, water_area NUMERIC, 
+			area NUMERIC, meta TEXT,
 			minX NUMERIC NOT NULL, minY NUMERIC NOT NULL,
 			maxX NUMERIC NOT NULL, maxY NUMERIC NOT NULL);'
 		);
@@ -101,7 +101,7 @@ class SqliteTigerDatabase implements TigerDatabase {
 		$this->dbh->exec('DELETE FROM region');
 		$this->dbh->exec('DELETE FROM part');
 
-		$this->sth_region  = $this->dbh->prepare('INSERT INTO region (geoid, name, land_area, water_area, minx, miny, maxx, maxy) VALUES (?,?,?,?, -180, -90, 180, 90)') or die('Failed to prepare region INSERT query');
+		$this->sth_region  = $this->dbh->prepare('INSERT INTO region (geoid, name, area, meta, minx, miny, maxx, maxy) VALUES (?,?,?,?, -180, -90, 180, 90)') or die('Failed to prepare region INSERT query');
 		$this->sth_part    = $this->dbh->prepare('INSERT INTO part (region_id, minx, miny, maxx, maxy, points) VALUES (?,?,?,?,?,?)');
 
 		$this->dbh->beginTransaction();
@@ -123,8 +123,8 @@ class SqliteTigerDatabase implements TigerDatabase {
 		$this->dbh->commit();
 	}
 
-	function region($geoid10, $name10, $land_area, $water_area) {
-		$this->sth_region->execute( array($geoid10, $name10, $land_area, $water_area) );
+	function region($geoid10, $name10, $area, $meta = null) {
+		$this->sth_region->execute( array($geoid10, $name10, $area, json_encode($meta)) );
 		return $this->dbh->lastInsertId();
 	}
 
@@ -225,13 +225,18 @@ function process_shp_file($db, $filename) {
 		if (count($data) == 0)
 			continue;
 
+		// Ensure everything is UTF-8 and trimmed
+		foreach ($data as $k => &$value) {
+			$value = trim(convert_to_utf8($value));
+		}
+
 		if (!isset($data['GEOID10'])) {
 			echo "Record doesn't contain geoid10\n";
 			var_dump($data);
 			continue;
 		}
 
-		$geoid10 = trim($data['GEOID10']);
+		$geoid10 = $data['GEOID10'];
 		if (empty($geoid10)) {
 			echo "Record contains empty geoid10\n";
 			var_dump($data);
@@ -240,17 +245,16 @@ function process_shp_file($db, $filename) {
 
 		$name10 = null;
 		if (isset($data['NAME10']))
-			$name10 = trim(convert_to_utf8($data['NAME10']));
+			$name10 = $data['NAME10'];
 
-		// in square meters
-		$land_area = $water_area = null;
+		// in square meters (SI units FTW)
+		$area = null;
 		if (isset($data['ALAND10']))
-			$land_area = (int)trim($data['ALAND10']);
-		if (isset($data['AWATER10']))
-			$water_area = (int)trim($data['AWATER10']);
+			$land_area = (int)$data['ALAND10'];
+		//if (isset($data['AWATER10']))
+		//	$water_area = (int)trim($data['AWATER10']);
 
-
-		$region_id = $db->region($geoid10, $name10, $land_area, $water_area);
+		$region_id = $db->region($geoid10, $name10, $area, $data);
 
 		$shape = $record->getShpData();
 
