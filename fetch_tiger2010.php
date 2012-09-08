@@ -100,6 +100,11 @@ $geos = array(
 		//'regex' => '/_us_.+\.zip$/',
 		'regex' => '/_\d{2}_.+\.zip$/',
 	),
+	'place' => array(
+		'name' => 'Places',
+		'path' => 'TIGER2010/PLACE',
+		'regex' => '/_\d{2}_.+\.zip$/',
+	),
 );
 
 function show_usage() {
