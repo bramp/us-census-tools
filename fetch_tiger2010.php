@@ -84,11 +84,6 @@ $geos = array(
 		'path' => 'TIGER2010/SLDU',
 		'regex' => '/.zip$/',
 	),
-	'cnecta' => array(
-		'name' => 'Combined New England City and Town Area',
-		'path' => 'TIGER2010/CNECTA',
-		'regex' => '/_us_.+\.zip$/',
-	),
 	'submcd' => array(
 		'name' => 'Subminor Civil Division',
 		'path' => 'TIGER2010/SUBMCD',
