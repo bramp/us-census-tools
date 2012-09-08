@@ -3,8 +3,8 @@
 // by Andrew Brampton 2011
 // 
 // I created this because a lot of the TIGER data is in multiple files, for example,
-// the county data is broken down by state, and in one large US file. This will only
-// fetch the large US file.
+// the county data is broken down by state, and in one large US file.
+// This will download the most complete data possible.
 
 $tiger_ftp = 'ftp2.census.gov';
 $tiger_path = '/geo/tiger';
@@ -16,7 +16,8 @@ $geos = array(
 	'cbsa'  => array(
 		'name' => 'Metropolitan/Micropolitan Statistical Area',
 		'path' => 'TIGER2010/CBSA',
-		'regex' => '/_us_.+\.zip$/',
+		//'regex' => '/_us_.+\.zip$/',
+		'regex' => '/_\d{2}_.+\.zip$/',
 	),
 	'bg'    => array(
 		'name' => 'Block Group',
@@ -26,12 +27,14 @@ $geos = array(
 	'csa'   => array(
 		'name' => 'Combined Statistical Area',
 		'path' => 'TIGER2010/CSA',
-		'regex' => '/_us_.+\.zip$/',
+		//'regex' => '/_us_.+\.zip$/',
+		'regex' => '/_\d{2}_.+\.zip$/',
 	),
 	'cd'    => array(
 		'name' => 'Congress Districts',
 		'path' => 'TIGER2010/CD',
-		'regex' => '/_us_.+\.zip$/',
+		//'regex' => '/_us_.+\.zip$/',
+		'regex' => '/_\d{2}_.+\.zip$/',
 	),
 	'state' => array(
 		'name' => 'State',
@@ -41,17 +44,20 @@ $geos = array(
 	'county' => array(
 		'name' => 'County',
 		'path' => 'TIGER2010/COUNTY',
-		'regex' => '/_us_.+\.zip$/',
+		//'regex' => '/_us_.+\.zip$/',
+		'regex' => '/_\d{2}_.+\.zip$/',
 	),
 	'cnecta' => array(
 		'name' => 'Combined New England City and Town Area',
 		'path' => 'TIGER2010/CNECTA',
-		'regex' => '/_us_.+\.zip$/',
+		//'regex' => '/_us_.+\.zip$/',
+		'regex' => '/_\d{2}_.+\.zip$/',
 	),
 	'necta' => array(
 		'name' => 'New England City and Town Area',
 		'path' => 'TIGER2010/NECTA',
-		'regex' => '/_us_.+\.zip$/',
+		//'regex' => '/_us_.+\.zip$/',
+		'regex' => '/_\d{2}_.+\.zip$/',
 	),
 	'elsd' => array(
 		'name' => 'Elementary School District',
@@ -96,7 +102,8 @@ $geos = array(
 	'zcta5' => array(
 		'name' => 'ZIP Code Tabulation Areas',
 		'path' => 'TIGER2010/ZCTA5',
-		'regex' => '/_us_.+\.zip$/',
+		//'regex' => '/_us_.+\.zip$/',
+		'regex' => '/_\d{2}_.+\.zip$/',
 	),
 );
 
