@@ -2,6 +2,8 @@
 /**
  * Converts the tiger Shapefiles into something else
  * by Andrew Brampton 2011-2012
+ *
+ * Tech info: http://www.census.gov/geo/www/tiger/tgrshp2010/TGRSHP10SF1AA.pdf
  */
 
 require 'lib/ShapeFile.inc.php';
