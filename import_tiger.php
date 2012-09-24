@@ -230,6 +230,10 @@ function process_shp_file($db, $filename) {
 		if (count($data) == 0)
 			continue;
 
+		if ($data['deleted'] == '1')
+			continue;
+		unset($data['deleted']);
+
 		// Ensure everything is UTF-8 and trimmed
 		foreach ($data as $k => &$value) {
 			$value = trim(convert_to_utf8($value));
