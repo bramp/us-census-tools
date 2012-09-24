@@ -253,11 +253,11 @@ function process_shp_file($db, $filename) {
 			$name10 = $data['NAME10'];
 
 		// in square meters (SI units FTW)
-		$area = null;
+		$area = $land_area = $water_area = null;
 		if (isset($data['ALAND10']))
-			$land_area = (int)$data['ALAND10'];
-		//if (isset($data['AWATER10']))
-		//	$water_area = (int)trim($data['AWATER10']);
+			$area = $land_area = (int)$data['ALAND10'];
+		if (isset($data['AWATER10']))
+			$water_area = (int)trim($data['AWATER10']);
 
 		$region_id = $db->region($geoid10, $name10, $area, $data);
 
